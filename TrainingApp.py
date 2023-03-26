@@ -28,7 +28,8 @@ def PersistTrainingSetForInstruments():
         db = myclient["TradeData"]
         Collection = db["Options"]
         record = Collection.find()
-        print(record)
+        #print(record)
+        print("No. of Option: ", Collection.find().count())
         r = redis.StrictRedis(host=redis_host, port=redis_port, decode_responses=True)
         for item in record :
             instrumentId= item.get('contractSymbol')
@@ -50,7 +51,8 @@ def PersistTrainingSetForInstruments():
                        "data": trainingSetDict}
                 trainingDB.insert_one(records)
                 r.set(instrumentId,json.dumps(trainingSetDict))
-                print("record added",records,r)
+                #print("record added",records,r)
+                print("record added", instrumentId)
 
 @app.route('/train/GetTrainingSetForInstruments', methods=['POST'])
 def GetTrainingSetForGivenInstruments():
