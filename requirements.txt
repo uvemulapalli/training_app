@@ -1,0 +1,7 @@
+Flask
+numpy
+scipy
+pymongo
+redis
+pandas
+requests
