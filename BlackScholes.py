@@ -1,9 +1,5 @@
-
 import warnings
-
 warnings.filterwarnings('ignore')
-
-
 # import other useful libs
 import numpy as np
 from scipy.stats import norm
