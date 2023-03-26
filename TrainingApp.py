@@ -13,7 +13,7 @@ from datetime import datetime
 
 app = Flask("Training Application")
 instrumentModelMap = {}
-size = 512
+size = 8192
 redis_host = "74.235.209.100"
 #redis_host = "a8216942522c.mylabserver.com"
 redis_port = 6379
