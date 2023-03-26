@@ -14,7 +14,8 @@ from datetime import datetime
 app = Flask("Training Application")
 instrumentModelMap = {}
 size = 512
-redis_host = "a8216942522c.mylabserver.com"
+redis_host = "21af924e8e1c.mylabserver.com"
+#redis_host = "a8216942522c.mylabserver.com"
 redis_port = 8095
 myclient = MongoClient("mongodb://21af924e8e2c.mylabserver.com:8080/?authSource=admin&readPreference=secondary&directConnection=true&ssl=false")
 logger = logging.getLogger()
