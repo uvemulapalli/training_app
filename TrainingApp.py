@@ -29,7 +29,7 @@ def PersistTrainingSetForInstruments():
         Collection = db["Options"]
         record = Collection.find()
         #print(record)
-        print("No. of Option: ", record.count())
+        #print("No. of Option: ", record.count())
         r = redis.StrictRedis(host=redis_host, port=redis_port, decode_responses=True)
         for item in record :
             instrumentId= item.get('contractSymbol')
