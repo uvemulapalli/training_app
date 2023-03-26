@@ -7,9 +7,6 @@ warnings.filterwarnings('ignore')
 # import other useful libs
 import numpy as np
 from scipy.stats import norm
-import matplotlib.pyplot as plt
-import time
-from tqdm import tqdm_notebook
 # helper analytics
 def bsPrice(spot, strike, vol, T):
     d1 = (np.log(spot / strike) + 0.5 * vol * vol * T) / vol / np.sqrt(T)
