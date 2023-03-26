@@ -17,6 +17,8 @@ size = 512
 redis_host = "a8216942522c.mylabserver.com"
 redis_port = 8095
 myclient = MongoClient("mongodb://21af924e8e2c.mylabserver.com:8080/?authSource=admin&readPreference=secondary&directConnection=true&ssl=false")
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
 
 @app.route('/train/PersistTrainingSetForInstruments', methods=['POST'])
 def PersistTrainingSetForInstruments():
@@ -64,6 +66,7 @@ def GetTrainingSetForGivenInstruments():
         try:
             if (trainingSetExists(instrumentId, r)):
                 print('training set exists')
+                 logger.info("training data exists in Redis")
                 trainingSetDict = r.get(instrumentId)
                 sub_response = {}
                 sub_response['instrumentId'] = instrumentId
@@ -71,6 +74,7 @@ def GetTrainingSetForGivenInstruments():
                 response["data"].append(sub_response)
                 continue
             else:
+                 logger.info("training data not exists in Redis")
                 xTrain, yTrain, dydxTrain = generateTrainingData(instrumentId, spotPrice, strikePrice, volatality,
                                                            expiryInYears)
                 model_training_data = np.concatenate((xTrain, yTrain, dydxTrain), axis=1)
@@ -92,9 +96,11 @@ def GetTrainingSetForGivenInstruments():
             df = pd.DataFrame(model_training_data, columns=['spot', 'price', 'differential'])
             trainingSetDict = df.to_dict(orient="records")
             try:
-                r.__setitem__(instrumentId, json.dumps(trainingSetDict))
+                 r.__setitem__(instrumentId, json.dumps(trainingSetDict))
+                  logger.info("setting  data in Redis")
             except:
                 print("redis not available")
+                logger.info("redis not available in Redis")
             sub_response = {}
             sub_response['instrumentId'] = instrumentId
             sub_response['training_data'] = trainingSetDict
