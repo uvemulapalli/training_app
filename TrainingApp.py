@@ -14,9 +14,9 @@ from datetime import datetime
 app = Flask("Training Application")
 instrumentModelMap = {}
 size = 512
-redis_host = "21af924e8e1c.mylabserver.com"
+redis_host = "74.235.209.100"
 #redis_host = "a8216942522c.mylabserver.com"
-redis_port = 8095
+redis_port = 6379
 myclient = MongoClient("mongodb://21af924e8e2c.mylabserver.com:8080/?authSource=admin&readPreference=secondary&directConnection=true&ssl=false")
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -46,10 +46,9 @@ def PersistTrainingSetForInstruments():
                 model_training_data = np.concatenate((xTrain, yTrain, dydxTrain), axis=1)
                 df = pd.DataFrame(model_training_data, columns=['spot', 'price', 'differential'])
                 trainingSetDict= df.to_dict(orient="records")
-                trainingDB = db["TrainingDB"]
-                records = {"instrumentId": instrumentId,
-                       "data": trainingSetDict}
-                trainingDB.insert_one(records)
+                #trainingDB = db["TrainingDB"]
+                #records = {"instrumentId": instrumentId,"data": trainingSetDict}
+                #trainingDB.insert_one(records)
                 r.set(instrumentId,json.dumps(trainingSetDict))
                 #print("record added",records,r)
                 print("record added", instrumentId)
