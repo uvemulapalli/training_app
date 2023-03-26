@@ -36,7 +36,7 @@ def PersistTrainingSetForInstruments():
             spotPrice = float(item.get('spotPrice')).__round__(3)
             volatality = float(item.get('volatility')).__round__(3)
             if(trainingSetExists(instrumentId,r)):
-                print('training set exists')
+                print('training set exists in redis')
             else:
                 xTrain,yTrain,dydxTrain = generateTrainingData(instrumentId,spotPrice,strikePrice, volatality, expiryInYears)
                 model_training_data = np.concatenate((xTrain, yTrain, dydxTrain), axis=1)
