@@ -66,7 +66,7 @@ def GetTrainingSetForGivenInstruments():
         try:
             if (trainingSetExists(instrumentId, r)):
                 print('training set exists')
-                 logger.info("training data exists in Redis")
+                logger.info("training data exists in Redis")
                 trainingSetDict = r.get(instrumentId)
                 sub_response = {}
                 sub_response['instrumentId'] = instrumentId
@@ -74,7 +74,7 @@ def GetTrainingSetForGivenInstruments():
                 response["data"].append(sub_response)
                 continue
             else:
-                 logger.info("training data not exists in Redis")
+                logger.info("training data not exists in Redis")
                 xTrain, yTrain, dydxTrain = generateTrainingData(instrumentId, spotPrice, strikePrice, volatality,
                                                            expiryInYears)
                 model_training_data = np.concatenate((xTrain, yTrain, dydxTrain), axis=1)
@@ -97,7 +97,7 @@ def GetTrainingSetForGivenInstruments():
             trainingSetDict = df.to_dict(orient="records")
             try:
                  r.__setitem__(instrumentId, json.dumps(trainingSetDict))
-                  logger.info("setting  data in Redis")
+                 logger.info("setting  data in Redis")
             except:
                 print("redis not available")
                 logger.info("redis not available in Redis")
