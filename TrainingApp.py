@@ -30,7 +30,7 @@ def PersistTrainingSetForInstruments():
         db = myclient["TradeData"]
         Collection = db["Options"]
         record = Collection.find()
-        print(record)
+        #print(record)
         try:
             redis_instrument_con = connectToRedis()
         except Exception as e:
@@ -58,7 +58,7 @@ def PersistTrainingSetForInstruments():
                        "data": trainingSetDict}
                 #trainingDB.insert_one(records)
                 redis_instrument_con.set(instrumentId,json.dumps(trainingSetDict))
-                print("record added",records,redis_instrument_con)
+                print("record added",instrumentId)
 
 # This function is to retrieve all the training set for given instruments.
 
