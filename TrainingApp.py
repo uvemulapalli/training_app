@@ -13,6 +13,7 @@ import redis
 import os
 from pymongo import MongoClient
 from datetime import datetime
+from flask_cors import cross_origin
 
 app = Flask("Training Application")
 instrumentModelMap = {}
@@ -23,6 +24,7 @@ logger.setLevel(logging.INFO)
 # this function is to  retrive all the instruments form mongo and persist to Redis.
 
 @app.route('/train/PersistTrainingSetForInstruments', methods=['POST'])
+@cross_origin()
 def PersistTrainingSetForInstruments():
         #connecting to Mongo db
         print('conecting to Mongo')
@@ -62,6 +64,7 @@ def PersistTrainingSetForInstruments():
 # This function is to retrieve all the training set for given instruments.
 
 @app.route('/train/GetTrainingSetForInstruments', methods=['POST'])
+@cross_origin()
 def GetTrainingSetForGivenInstruments():
     instrumentList = request.get_json()
     print('Request received',instrumentList)
@@ -124,6 +127,7 @@ def GetTrainingSetForGivenInstruments():
 # this function is to generate test data for given instruments and return test data
 
 @app.route('/train/generateTestSet', methods=['POST'])
+@cross_origin()
 def generateTestSet():
     instrumentList = request.get_json()
     response = getRawResponse()
