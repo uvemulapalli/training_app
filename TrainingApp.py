@@ -54,8 +54,7 @@ def PersistTrainingSetForInstruments():
                 df = pd.DataFrame(model_training_data, columns=['spot', 'price', 'differential'])
                 trainingSetDict= df.to_dict(orient="records")
                 #trainingDB = db["TrainingDB"]
-                #records = {"instrumentId": instrumentId,
-                       "data": trainingSetDict}
+                #records = {"instrumentId": instrumentId,"data": trainingSetDict}
                 #trainingDB.insert_one(records)
                 redis_instrument_con.set(instrumentId,json.dumps(trainingSetDict))
                 print("record added",instrumentId)
