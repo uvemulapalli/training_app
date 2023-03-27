@@ -5,6 +5,8 @@ import logging
 import pymongo
 import requests
 from flask import Flask, jsonify, request, Response
+from pip._internal.req import install_given_reqs
+
 from BlackScholes import BlackScholes
 import numpy as np
 from datetime import datetime
@@ -35,6 +37,8 @@ def PersistTrainingSetForInstruments():
         #print(record)
         try:
             redis_instrument_con = connectToRedis()
+            keys= redis_instrument_con.keys('*')
+            redis_instrument_con.delete(*keys)
         except Exception as e:
             print('Could not connect to redis', str(e))
             error_message = 'Could not connect to redis  ' + ' cause : ' + str(e)
@@ -42,24 +46,23 @@ def PersistTrainingSetForInstruments():
             instrumentId= item.get('contractSymbol')
             strikePrice = float(item.get('strikePrice'))
             expiry = item.get('expirationDate')
-            date_object = datetime.strptime(expiry, '%Y-%m-%d').date()
-            expiryInYears = float((date_object.month-datetime.now().month)/12).__round__(1)
-            spotPrice = float(item.get('spotPrice')).__round__(3)
-            volatality = float(item.get('volatility')).__round__(3)
+            date_object = datetime.strptime(expiry, '%Y-%m-%d')
+            expiryInYears = date_object - datetime.now()
+            expiryInDays = ((expiryInYears.days.__int__()) / 365).__round__(2)
+            spotPrice = float(item.get('spotPrice'))
+            volatality = float(item.get('volatility'))
             if(trainingSetExists(instrumentId,redis_instrument_con)):
                 print('training set exists')
-                logger.info("training data exists in Redis")
+                redis_instrument_con.delete(instrumentId)
+                logger.info("training data exists in Redis and deleted for ", instrumentId)
             else:
                 logger.info("training data doesn't exists in Redis")
-                xTrain,yTrain,dydxTrain = generateTrainingData(instrumentId,spotPrice,strikePrice, volatality, expiryInYears)
-                model_training_data = np.concatenate((xTrain, yTrain, dydxTrain), axis=1)
-                df = pd.DataFrame(model_training_data, columns=['spot', 'price', 'differential'])
-                trainingSetDict= df.to_dict(orient="records")
-                #trainingDB = db["TrainingDB"]
-                #records = {"instrumentId": instrumentId,"data": trainingSetDict}
-                #trainingDB.insert_one(records)
-                redis_instrument_con.set(instrumentId,json.dumps(trainingSetDict))
-                print("record added",instrumentId)
+            xTrain,yTrain,dydxTrain = generateTrainingData(instrumentId,spotPrice,strikePrice, volatality, expiryInDays)
+            model_training_data = np.concatenate((xTrain, yTrain, dydxTrain), axis=1)
+            df = pd.DataFrame(model_training_data, columns=['price', 'spot', 'differential'])
+            trainingSetDict= df.to_dict(orient="records")
+            redis_instrument_con.set(instrumentId,json.dumps(trainingSetDict))
+            print("record added",instrumentId)
 
 # This function is to retrieve all the training set for given instruments.
 
@@ -94,7 +97,7 @@ def GetTrainingSetForGivenInstruments():
                 xTrain, yTrain, dydxTrain = generateTrainingData(instrumentId, spotPrice, strikePrice, volatality,
                                                            expiryInYears)
                 model_training_data = np.concatenate((xTrain, yTrain, dydxTrain), axis=1)
-                df = pd.DataFrame(model_training_data, columns=['spot', 'price', 'differential'])
+                df = pd.DataFrame(model_training_data, columns=['price', 'spot', 'differential'])
                 trainingSetDict = df.to_dict(orient="records")
                 try:
                     redis_instrument_con.__setitem__(instrumentId, json.dumps(trainingSetDict))
@@ -111,7 +114,7 @@ def GetTrainingSetForGivenInstruments():
             xTrain, yTrain, dydxTrain = generateTrainingData(instrumentId, spotPrice, strikePrice, volatality,
                                                        expiryInYears)
             model_training_data = np.concatenate((xTrain, yTrain, dydxTrain), axis=1)
-            df = pd.DataFrame(model_training_data, columns=['spot', 'price', 'differential'])
+            df = pd.DataFrame(model_training_data, columns=['price', 'spot', 'differential'])
             trainingSetDict = df.to_dict(orient="records")
             try:
                 redis_instrument_con.__setitem__(instrumentId, json.dumps(trainingSetDict))
@@ -169,7 +172,7 @@ def connectToMongo(db=0):
 
 def generateTrainingData(instrumentId,spotPrice,strikePrice,volatality,expiryInYears):
     generator = BlackScholes()
-    generator.__init__(spot=(spotPrice), K=(strikePrice), vol=volatality, T2=(1 + expiryInYears))
+    generator.__init__(spot=((spotPrice)/100), K=((strikePrice)/100), vol=volatality, T2=(1 + expiryInYears))
     xTrain, yTrain, dydxTrain = generator.trainingSet(size)
     return xTrain, yTrain, dydxTrain
 
@@ -189,12 +192,13 @@ def getRequestParam(request_data):
     instrumentId = request_data['ticker']
     strikePrice = float(request_data['strikeprice'])
     expiry = request_data['expiry']
-    date_object = datetime.strptime(expiry, '%Y-%m-%d').date()
-    expiryInYears = float((date_object.month - datetime.now().month) / 12).__round__(1)
+    date_object = datetime.strptime(expiry, '%Y-%m-%d')
+    expiryInYears = date_object - datetime.now()
+    expiryInDays =  ((expiryInYears.days.__int__())/365).__round__(2)
+    #expiryInYears = float((date_object.month - datetime.now().month) / 12).__round__(1)
     spotPrice = float(request_data['spotprice'])
     volatality = float(request_data['volatility'])
-
-    return instrumentId , strikePrice, expiryInYears, spotPrice, volatality
+    return instrumentId , strikePrice, expiryInDays, spotPrice, volatality
 
 def populateModelCache(instrumentId, model):
     if not instrumentModelMap.get(instrumentId):
