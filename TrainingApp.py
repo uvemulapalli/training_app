@@ -146,8 +146,10 @@ def generateTestSet():
 def connectToRedis(db=0):
     REDIS_HOST = os.environ.get('REDIS_HOST')
     REDIS_PORT = os.environ.get('REDIS_PORT')
-    redis_host = "a8216942522c.mylabserver.com" if not REDIS_HOST else REDIS_HOST
-    redis_port = 8095 if not REDIS_PORT else int(REDIS_PORT)
+    #redis_host = "a8216942522c.mylabserver.com" if not REDIS_HOST else REDIS_HOST
+    #redis_port = 8095 if not REDIS_PORT else int(REDIS_PORT)
+    redis_host = "74.235.209.100" if not REDIS_HOST else REDIS_HOST
+    redis_port = 6379 if not REDIS_PORT else int(REDIS_PORT)
     print(f'Connecting to Redis host ={redis_host} , port ={redis_port}')
     rs = redis.StrictRedis(host=redis_host, port=redis_port, db=db, decode_responses=True)
     rs.ping()
@@ -207,4 +209,4 @@ def main():
     print(response_API.status_code)
 if __name__ == '__main__':
   #  main()
-  app.run(debug=True,host='0.0.0.0', port=5000)
+  app.run(debug=True,host='0.0.0.0', port=5001)
