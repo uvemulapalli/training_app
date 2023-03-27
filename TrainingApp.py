@@ -16,7 +16,7 @@ from datetime import datetime
 
 app = Flask("Training Application")
 instrumentModelMap = {}
-size = 512
+size = 8192
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
