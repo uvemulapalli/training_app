@@ -179,7 +179,7 @@ def generateTrainingData(instrumentId,spotPrice,strikePrice,volatality,expiryInY
 
 def generateTestData(instrumentId,spotPrice,strikePrice,volatality,expiryInYears):
     generator = BlackScholes()
-    generator.__init__(spot=(spotPrice), K=(strikePrice), vol=volatality, T2=(1 + expiryInYears))
+    generator.__init__(spot=(spotPrice/100), K=(strikePrice/100), vol=volatality, T2=(1 + expiryInYears))
     lowerBound = ( spotPrice - (spotPrice * 0.05) )
     upperBound = ( spotPrice + (spotPrice * 0.05) )
     xTrain, yTrain, dydxTrain = generator.testSet(lowerBound,upperBound)
