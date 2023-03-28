@@ -154,7 +154,7 @@ def connectToRedis(db=0):
     REDIS_PORT = os.environ.get('REDIS_PORT')
     #redis_host = "a8216942522c.mylabserver.com" if not REDIS_HOST else REDIS_HOST
     #redis_port = 8095 if not REDIS_PORT else int(REDIS_PORT)
-    redis_host = "74.235.209.100" if not REDIS_HOST else REDIS_HOST
+    redis_host = "13.68.144.231" if not REDIS_HOST else REDIS_HOST
     redis_port = 6379 if not REDIS_PORT else int(REDIS_PORT)
     print(f'Connecting to Redis host ={redis_host} , port ={redis_port}')
     rs = redis.StrictRedis(host=redis_host, port=redis_port, db=db, decode_responses=True)
