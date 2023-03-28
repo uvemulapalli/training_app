@@ -59,7 +59,7 @@ def PersistTrainingSetForInstruments():
                 logger.info("training data doesn't exists in Redis")
             xTrain,yTrain,dydxTrain = generateTrainingData(instrumentId,spotPrice,strikePrice, volatality, expiryInDays)
             model_training_data = np.concatenate((xTrain, yTrain, dydxTrain), axis=1)
-            df = pd.DataFrame(model_training_data, columns=['price', 'spot', 'differential'])
+            df = pd.DataFrame(model_training_data, columns=['spot', 'price', 'differential'])
             trainingSetDict= df.to_dict(orient="records")
             redis_instrument_con.set(instrumentId,json.dumps(trainingSetDict))
             print("record added",instrumentId)
@@ -97,7 +97,7 @@ def GetTrainingSetForGivenInstruments():
                 xTrain, yTrain, dydxTrain = generateTrainingData(instrumentId, spotPrice, strikePrice, volatality,
                                                            expiryInYears)
                 model_training_data = np.concatenate((xTrain, yTrain, dydxTrain), axis=1)
-                df = pd.DataFrame(model_training_data, columns=['price', 'spot', 'differential'])
+                df = pd.DataFrame(model_training_data, columns=['spot', 'price', 'differential'])
                 trainingSetDict = df.to_dict(orient="records")
                 try:
                     redis_instrument_con.__setitem__(instrumentId, json.dumps(trainingSetDict))
