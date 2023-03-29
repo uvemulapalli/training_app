@@ -185,8 +185,10 @@ def generateTestData(instrumentId,spotPrice,strikePrice,volatality,expiryInYears
     spotPrice = spotPrice/100
     strikePrice = strikePrice/100
     generator.__init__(spot=(spotPrice), K=(strikePrice), vol=volatality, T2=(1 + expiryInYears))
-    lowerBound = ( spotPrice - (spotPrice * 0.65) )
-    upperBound = ( spotPrice + (spotPrice * 0.65) )
+    # lowerBound = ( spotPrice - (spotPrice * 0.65) )
+    # upperBound = ( spotPrice + (spotPrice * 0.65) )
+    lowerBound = 0.35
+    upperBound = 0.65
     xTrain, yTrain, dydxTrain = generator.testSet(lowerBound,upperBound)
     return xTrain, yTrain, dydxTrain
 
