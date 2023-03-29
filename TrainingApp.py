@@ -171,11 +171,12 @@ def connectToMongo(db=0):
         print("Failed to connect to server {}".format(mongoclient))
 
 def generateTrainingData(instrumentId,spotPrice,strikePrice,volatality,expiryInYears):
+    seed = np.random.randint(0, 10000)
     generator = BlackScholes()
     spotPrice = spotPrice / 100
     strikePrice = strikePrice / 100
     generator.__init__(spot=(spotPrice), K=(strikePrice), vol=volatality, T2=(1 + expiryInYears))
-    xTrain, yTrain, dydxTrain = generator.trainingSet(size)
+    xTrain, yTrain, dydxTrain = generator.trainingSet(size,seed)
     return xTrain, yTrain, dydxTrain
 
 
